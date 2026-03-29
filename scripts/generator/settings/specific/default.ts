@@ -7,7 +7,7 @@ export default {
     background: '#263238',
     backgroundAlt: '#263238',
     contrastBorder: '#263238',
-    comments: '#546E7A',
+    comments: '#7a8f99',
     caret: '#FFCC00',
     findHighlight: '#FFCC00',
     foreground: '#EEFFFF',
@@ -33,6 +33,9 @@ export default {
     findMatchBackground: '#000000',
     findMatchHighlightBackground: '#00000050',
     findMatchHighlightBorder: '#ffffff30',
+    editorBackground: '#1a2327',
+    editorLineHighlightBackground: '#263238',
+    workbenchBorderAccent: '#80CBC4',
     base: {
       white: '#ffffff',
       black: '#000000',

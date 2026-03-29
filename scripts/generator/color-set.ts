@@ -1,7 +1,64 @@
 import {IColorSet} from '@moxer/vscode-theme-generator';
 import {ThemeSetting} from './types';
 
+/**
+ * Semantic token colors merged into generated theme JSON.
+ *
+ * Keys follow VS Code semantic token selectors (standard types). Colors align
+ * with ``getColorSet`` syntax mapping for consistency under Pylance etc.
+ *
+ * Args:
+ *     theme: Theme variant (palette in ``theme.scheme``).
+ *
+ * Returns:
+ *     Map of semantic selector string to foreground hex or settings object.
+ */
+export const getSemanticTokenColors = (
+  theme: ThemeSetting
+): Record<string, string | {foreground?: string; fontStyle?: string}> => {
+  const b = theme.scheme.base;
+  const fg = theme.scheme.foreground;
+  return {
+    namespace: b.yellow,
+    /**
+     * Pylance marks ``typing.Any`` and similar special forms as standard token ``type``
+     * while built-ins like ``str`` are often ``class``; use ``foreground`` so ``Any``
+     * matches ordinary variables. Other languages may also render ``type`` as text.
+     */
+    type: fg,
+    class: b.yellow,
+    enum: b.yellow,
+    interface: b.yellow,
+    struct: b.yellow,
+    typeParameter: b.yellow,
+    enumMember: b.yellow,
+    function: b.blue,
+    method: b.blue,
+    decorator: b.purple,
+    variable: fg,
+    /** Match normal variables when Pylance adds ``defaultLibrary`` (e.g. stdlib). */
+    'variable.defaultLibrary': fg,
+    /** Annotation identifiers emitted as ``variable`` + ``typeHint`` (see also ``type``). */
+    'variable.typeHint': fg,
+    property: b.red,
+    parameter: {foreground: fg, fontStyle: 'italic'},
+    number: b.orange,
+    regexp: b.green,
+    operator: b.cyan
+  };
+};
+
 export const getColorSet = (theme: ThemeSetting): IColorSet => {
+  const editorBg = theme.scheme.editorBackground ?? theme.scheme.background;
+  const editorLineHl =
+    theme.scheme.editorLineHighlightBackground ??
+    `${theme.scheme.lineHighlight}50`;
+  const wbBorder = theme.scheme.workbenchBorderAccent;
+  const editorGroupBorder = wbBorder ?? theme.scheme.shadow;
+  const chromeBorder = wbBorder ?? `${theme.scheme.contrastBorder}60`;
+  const scrollbarActive = wbBorder ?? theme.scheme.defaultAccent;
+  const scrollbarHover = wbBorder ?? theme.scheme.scrollbarsHover;
+
   return {
     semanticHighlighting: true,
     base: {
@@ -37,7 +94,7 @@ export const getColorSet = (theme: ThemeSetting): IColorSet => {
       keyword: theme.scheme.base.cyan,
       storage: theme.scheme.base.purple,
       string: theme.scheme.base.green,
-      stringEscape: theme.scheme.foreground,
+      stringEscape: theme.scheme.base.orange,
       type: theme.scheme.base.yellow,
       punctuation: theme.scheme.base.cyan,
       otherKeyword: theme.scheme.base.orange,
@@ -106,7 +163,8 @@ export const getColorSet = (theme: ThemeSetting): IColorSet => {
       {
         name: 'Python - Self Parameter',
         scope: [
-          'variable.parameter.function.language.special.self.python'
+          'variable.parameter.function.language.special.self.python',
+          'variable.language.special.self.python'
         ],
         settings: {
           foreground: theme.scheme.base.red,
@@ -273,7 +331,7 @@ export const getColorSet = (theme: ThemeSetting): IColorSet => {
       */
       'sideBar.background': theme.scheme.backgroundAlt,
       'sideBar.foreground': theme.scheme.sidebarForeground,
-      'sideBar.border': `${theme.scheme.contrastBorder}60`,
+      'sideBar.border': chromeBorder,
       /**
       * Sidebar elements style
       */
@@ -284,7 +342,7 @@ export const getColorSet = (theme: ThemeSetting): IColorSet => {
       /**
       * Window panels style (terminal, global search)
       */
-      'panel.border': `${theme.scheme.contrastBorder}60`,
+      'panel.border': chromeBorder,
       'panel.background': theme.scheme.backgroundAlt,
       'panel.dropBackground': theme.scheme.foreground,
       'sash.hoverBorder': `${theme.scheme.defaultAccent}50`,
@@ -297,9 +355,9 @@ export const getColorSet = (theme: ThemeSetting): IColorSet => {
       /**
       * Code Editor style
       */
-      'editor.background': theme.scheme.background,
+      'editor.background': editorBg,
       'editor.foreground': theme.scheme.foreground,
-      'editor.lineHighlightBackground': `${theme.scheme.lineHighlight}50`,
+      'editor.lineHighlightBackground': editorLineHl,
       'editor.selectionHighlightBackground': `${theme.scheme.caret}20`,
       'editor.lineHighlightBorder': `${theme.scheme.lineHighlight}00`,
       'editor.findMatchBackground': theme.scheme.findMatchBackground,
@@ -314,7 +372,7 @@ export const getColorSet = (theme: ThemeSetting): IColorSet => {
       'editorLineNumber.activeForeground': theme.scheme.sidebarForeground,
       // Editor tab groups
       'editorGroupHeader.tabsBackground': theme.scheme.background,
-      'editorGroup.border': theme.scheme.shadow,
+      'editorGroup.border': editorGroupBorder,
       // Editor gutter
       'editorGutter.modifiedBackground': `${theme.scheme.base.blue}60`,
       'editorGutter.addedBackground': `${theme.scheme.base.green}60`,
@@ -345,8 +403,8 @@ export const getColorSet = (theme: ThemeSetting): IColorSet => {
       * Scrollbar style
       */
       'scrollbarSlider.background': theme.scheme.scrollbars,
-      'scrollbarSlider.hoverBackground': theme.scheme.scrollbarsHover,
-      'scrollbarSlider.activeBackground': theme.scheme.defaultAccent,
+      'scrollbarSlider.hoverBackground': scrollbarHover,
+      'scrollbarSlider.activeBackground': scrollbarActive,
       /**
       * Tabs style
       */
@@ -455,6 +513,11 @@ export const getColorSet = (theme: ThemeSetting): IColorSet => {
       'quickInput.list.focusBackground': `${theme.scheme.foreground}20`,
       'list.focusForeground': theme.scheme.foreground,
       'list.highlightForeground': theme.scheme.defaultAccent,
+      ...(wbBorder ? {
+        'list.activeSelectionBorder': wbBorder,
+        'list.focusBorder': wbBorder,
+        'tab.activeBorderTop': wbBorder
+      } : {}),
       // 'list.dropBackground': theme.scheme.shade2,
       /**
       * Editor suggest widget style

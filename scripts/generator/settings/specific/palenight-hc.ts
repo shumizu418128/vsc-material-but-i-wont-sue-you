@@ -33,6 +33,9 @@ export default {
     findMatchBackground: '#000000',
     findMatchHighlightBackground: '#00000050',
     findMatchHighlightBorder: '#ffffff50',
+    editorBackground: '#1a2327',
+    editorLineHighlightBackground: '#263238',
+    workbenchBorderAccent: '#86cec7',
     base: {
       white: '#ffffff',
       black: '#000000',

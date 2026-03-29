@@ -32,6 +32,18 @@ export type ThemeSetting = {
     findMatchBackground: string;
     findMatchHighlightBackground: string;
     findMatchHighlightBorder: string;
+    /**
+     * Editor surface background (defaults to ``background`` when omitted).
+     */
+    editorBackground?: string;
+    /**
+     * Current-line background in the editor (solid hex; defaults to ``lineHighlight`` with alpha).
+     */
+    editorLineHighlightBackground?: string;
+    /**
+     * Borders: editor group, panel, sidebar, list focus, tab top; scrollbar active/hover.
+     */
+    workbenchBorderAccent?: string;
     base: {
       white: string;
       black: string;
