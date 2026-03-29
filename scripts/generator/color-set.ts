@@ -40,7 +40,12 @@ export const getSemanticTokenColors = (
     'variable.defaultLibrary': fg,
     /** Annotation identifiers emitted as ``variable`` + ``typeHint`` (see also ``type``). */
     'variable.typeHint': fg,
-    property: b.red,
+    /**
+     * Pylance marks class/instance members as ``property`` (often ``static`` + ``classMember``).
+     * A language-scoped override did not reliably win over the base rule in practice, so keep
+     * ``property`` aligned with ordinary text; TextMate ``classMember`` still tints where used.
+     */
+    property: fg,
     /**
      * Do not set a blanket ``parameter`` color: Pylance tags several roles as
      * ``parameter`` (including some plain identifiers with only ``source.python`` in
