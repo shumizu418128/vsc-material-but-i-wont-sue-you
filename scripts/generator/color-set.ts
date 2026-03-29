@@ -41,7 +41,18 @@ export const getSemanticTokenColors = (
     /** Annotation identifiers emitted as ``variable`` + ``typeHint`` (see also ``type``). */
     'variable.typeHint': fg,
     property: b.red,
-    parameter: {foreground: fg, fontStyle: 'italic'},
+    /**
+     * Do not set a blanket ``parameter`` color: Pylance tags several roles as
+     * ``parameter`` (including some plain identifiers with only ``source.python`` in
+     * TextMate). A single paleblue ``parameter`` rule colors those incorrectly.
+     *
+     * - ``parameter.declaration``: formal parameters in ``def`` / similar — match
+     *   ordinary variables.
+     * - Other ``parameter`` tokens: VS Code falls back to probing ``variable.parameter``
+     *   (see tokenClassificationRegistry); foreground can stay unset so TextMate wins
+     *   — e.g. ``variable.parameter.function-call.python`` (paleblue in ``customTokens``).
+     */
+    'parameter.declaration': {foreground: fg, fontStyle: 'italic'},
     number: b.orange,
     regexp: b.green,
     operator: b.cyan
@@ -157,6 +168,16 @@ export const getColorSet = (theme: ThemeSetting): IColorSet => {
           'variable.parameter'
         ],
         settings: {
+          fontStyle: 'italic'
+        }
+      },
+      {
+        name: 'Python - Keyword argument name (call)',
+        scope: [
+          'variable.parameter.function-call.python'
+        ],
+        settings: {
+          foreground: theme.scheme.base.paleblue,
           fontStyle: 'italic'
         }
       },
